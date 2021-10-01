@@ -102,10 +102,13 @@ ll value(T *a,ll n,T str){
 const ll IDENTIFIER=100;//标识符
 const ll CONSTANT=101;//常量
 const ll FILTER_VALUE=102;//省略符 
-
+//函数查询
+ll hs_cnt;//函数总量 
 struct hanshu {
-	string type;	
-};
+	string type;
+	string name;
+	ll id;	
+}h[1005];
 //变量查询 
 ll bl_cnt;//变量总数 
 struct bianliang {
@@ -116,7 +119,7 @@ struct bianliang {
 struct Node {
 	ll son[53];ll id;
 };
-struct Tree {
+struct Tree_B {
 	Node t[10000];ll rt,cnt;
 	void init() {rt=0;cnt=0;}
 	ll new_node() {t[++cnt].id=-1;return cnt;}
@@ -145,7 +148,38 @@ struct Tree {
 		}
 		return t[x].id;
 	}
-}BT;//变量Tree 
+}BT;//变量Tree;
+
+struct Tree_H {
+	Node t[10000];ll rt,cnt;
+	void init() {rt=0;cnt=0;}
+	ll new_node() {t[++cnt].id=-1;return cnt;}
+	void insert(hanshu hl) {
+		string a=hl.name;
+		ll len=0,x=rt;ll Len=a.size();
+		while(len<Len) {
+			char ch=a[len];
+			if(IsUpLetter(ch)) ch=ch-'A';
+			else if(IsLowLetter(ch)) ch=ch-'a';
+			if(ch=='_') ch=52;
+			if(!t[x].son[ch]) {t[x].son[ch]=new_node();}
+			x=t[x].son[ch];len++;
+		}
+		t[x].id = hl.id;
+	}
+	ll find(string a) {
+		ll len=0,x=rt;ll Len=a.size();
+		while(len<Len) {
+			char ch=a[len];
+			if(IsUpLetter(ch)) ch=ch-'A';
+			else if(IsLowLetter(ch)) ch=ch-'a';
+			if(ch=='_') ch=52;
+			if(!t[x].son[ch]) {return -1 ;}
+			x=t[x].son[ch];
+		}
+		return t[x].id;
+	}
+}HT;//函数Tree 
 
 //回退 
 char flag;
@@ -156,7 +190,7 @@ char getc() {
 }
 
 void work() {
-	char ch;string arr;flag=0;BT.init();
+	char ch;string arr;flag=0;BT.init();HT.init();
 	while(~(ch=getc())) {
 		arr = "";
 		if(IsFilter(ch)) continue ;//忽略字
@@ -184,8 +218,8 @@ void work() {
 					queue<char>Q;
                 	while(!Q.empty()) Q.pop();
                 	while(IsFilter(ch)) ch=getc();
-                	string ar;ar.clear();Q.push(ch);
-					while(ch!='('&&ch!=';') Q.push(ch=getc());
+                	string ar;ar.clear();
+					while(ch!='('&&ch!=';') {Q.push(ch);ch=getc();}
 					if(ch==';') {
 						Q.push(';');
 						while(!Q.empty()) {
@@ -198,13 +232,19 @@ void work() {
 							bianliang a;
 							a.name=ar;a.type=KEYWORD[t-1];
 							a.id=++bl_cnt;BT.insert(a);
-							cout<<"TPYE:"<<a.type<<"DATA:"<<a.name<<endl;
+							cout<<"变量"<<"TPYE:"<<a.type<<"NAME:"<<a.name<<endl;
 						}
 					}
 					else {
-						
+						ar.clear();
+						while(!Q.empty()&&(Q.front()==' ')) Q.pop();
+						while(!Q.empty()) {ar+=Q.front();Q.pop();}
+						hanshu a;a.name=ar;a.type=KEYWORD[t-1];
+						a.id=++hs_cnt;HT.insert(a);
+						cout<<"函数"<<"TPYE:"<<a.type<<"NAME:"<<a.name<<endl;
+						flag=ch;
 					}
-				} 
+				}
 			}
 			else {
                 printf("%3d    ",IDENTIFIER);
@@ -279,7 +319,7 @@ void work() {
 	}
 }
 int main() {
-//  FR();
+  FR();
 	work();
 //  FC();
     return 0;
