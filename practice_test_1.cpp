@@ -103,9 +103,49 @@ const ll IDENTIFIER=100;//标识符
 const ll CONSTANT=101;//常量
 const ll FILTER_VALUE=102;//省略符 
 
-void build() {
-	
-}
+struct hanshu {
+	string type;	
+};
+//变量查询 
+ll bl_cnt;//变量总数 
+struct bianliang {
+	string name;
+	string type;
+	ll id;
+}b[1005]; 
+struct Node {
+	ll son[53];ll id;
+};
+struct Tree {
+	Node t[10000];ll rt,cnt;
+	void init() {rt=0;cnt=0;}
+	ll new_node() {t[++cnt].id=-1;return cnt;}
+	void insert(bianliang bl) {
+		string a=bl.name;
+		ll len=0,x=rt;ll Len=a.size();
+		while(len<Len) {
+			char ch=a[len];
+			if(IsUpLetter(ch)) ch=ch-'A';
+			else if(IsLowLetter(ch)) ch=ch-'a';
+			if(ch=='_') ch=52;
+			if(!t[x].son[ch]) {t[x].son[ch]=new_node();}
+			x=t[x].son[ch];len++;
+		}
+		t[x].id = bl.id;
+	}
+	ll find(string a) {
+		ll len=0,x=rt;ll Len=a.size();
+		while(len<Len) {
+			char ch=a[len];
+			if(IsUpLetter(ch)) ch=ch-'A';
+			else if(IsLowLetter(ch)) ch=ch-'a';
+			if(ch=='_') ch=52;
+			if(!t[x].son[ch]) {return -1 ;}
+			x=t[x].son[ch];
+		}
+		return t[x].id;
+	}
+}BT;//变量Tree 
 
 //回退 
 char flag;
@@ -115,9 +155,8 @@ char getc() {
 	else return ch=getchar();
 }
 
-queue<char>Q;
 void work() {
-	char ch;string arr;flag=0;
+	char ch;string arr;flag=0;BT.init();
 	while(~(ch=getc())) {
 		arr = "";
 		if(IsFilter(ch)) continue ;//忽略字
@@ -128,6 +167,7 @@ void work() {
             	printf("%3d    ",t);
 				cout<<arr<<"  关键字"<<endl;
                 if(t==16||t==17) {
+                	queue<char>Q;
                 	while(!Q.empty()) Q.pop();
                 	while((ch=getc())!='(');
                 	while((ch = getc())!=')') {Q.push(ch);}
@@ -139,7 +179,32 @@ void work() {
                 	if(t==16) cout<<"输入";
                 	else cout<<"输出";
                 	cout<<ar<<endl;
-				}
+				}//scanf和printf
+				if(t>=1&&t<=5) {
+					queue<char>Q;
+                	while(!Q.empty()) Q.pop();
+                	while(IsFilter(ch)) ch=getc();
+                	string ar;ar.clear();Q.push(ch);
+					while(ch!='('&&ch!=';') Q.push(ch=getc());
+					if(ch==';') {
+						Q.push(';');
+						while(!Q.empty()) {
+							ar.clear();
+							char chx=Q.front();Q.pop();
+							if(chx==' '||chx==';') continue ;
+							while(chx!=','&&chx!=';') {
+								ar+=chx;chx=Q.front();Q.pop();
+							}
+							bianliang a;
+							a.name=ar;a.type=KEYWORD[t-1];
+							a.id=++bl_cnt;BT.insert(a);
+							cout<<"TPYE:"<<a.type<<"DATA:"<<a.name<<endl;
+						}
+					}
+					else {
+						
+					}
+				} 
 			}
 			else {
                 printf("%3d    ",IDENTIFIER);
@@ -159,11 +224,9 @@ void work() {
         }
 		else if(IsUpLetter(ch)||ch == '_'){
             while(IsUpLetter(ch)||IsLowLetter(ch)||ch=='_'||IsDigit(ch)){
-                arr += ch;
-                ch=getc();
+                arr += ch;ch = getc();
             }
-            flag=ch;
-            printf("%3d    ",IDENTIFIER);
+            flag = ch;printf("%3d    ",IDENTIFIER);
             cout<<arr<<"  标识符"<<endl;
         }
         else {
@@ -217,7 +280,6 @@ void work() {
 }
 int main() {
 //  FR();
-	build();
 	work();
 //  FC();
     return 0;
