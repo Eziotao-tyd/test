@@ -18,7 +18,7 @@
 #define max(a,b) (a>b?a:b)
 #define mp(a,b) make_pair(a,b)
 #define eps 1e-8
-#define debug puts("**************************");
+#define debug puts("ERROR");
 //#pragma comment(linker, "/STACK:1024000000,1024000000")
 //#pragma GCC optimize (2)
 //#pragma G++ optimize (2)
@@ -113,7 +113,7 @@ char getc() {
 
 struct zifu {
 	ll bh;
-	string type;
+	string type;//GUANJIANZI,BIAOSHIFU,SHUZI,YUNSUANFU,FENGEFU,UNKNOWN
 	string name;
 	zifu(ll t=0,string a="",string b="") {
 		bh=t;type=a;name=b;
@@ -216,18 +216,109 @@ void check_Q() {
 	}
 }
 
+ll Node_cnt;
 struct Node {
 	string type;
 	string content;
 	ll children_num;
+	ll id;
 	ll depth;ll width;
-	Node **children;
+	vector<ll>children;
+	void clear(){
+		id=children_num=depth=width=0;
+		type.clear();content.clear();
+		children.clear();
+	}
+	Node() {clear();}
 };
-void dfs() {
+vector<Node>node;
+ll condition(ll dep,ll wid,string a) {
 	
 }
-void solve() {
+ll biaodashi(ll dep,ll wid,string a) {
 	
+}
+ll dfs(ll dep,ll wid,zifu a) {
+	ll t=++Node_cnt;Node x;
+	x.id=t;node.push_back(x);
+	if(a.type=="GUANJIANZI") {//关键字
+		switch(a.bh) {
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5: {//数据类型申明 
+				
+				break;
+			}
+			case 6: {//define
+				
+				break;
+			}
+			case 7: {//include
+				
+				break;
+			}
+			case 8: {//if
+				
+				break;
+			}
+			case 9: {//else
+				
+				break;
+			}
+			case 10: {//return
+				
+				break;
+			} 
+			case 11: {//while
+				
+				break;
+			}
+			case 12: {//for
+				
+				break;
+			}
+			case 13: {//do
+				
+				break;
+			}
+			case 14: {//break
+				
+				break;
+			}
+			case 15: {//continue
+				
+				break;
+			}
+			case 16: {//scanf
+				
+				break;
+			} 
+			case 17: {//printf
+				
+				break;
+			}
+			case 18: {//getchar
+				
+				break;
+			}
+		}
+	}
+	else if(a.type=="BIAOSHIFU") {
+		
+	}
+	return t;
+}
+void solve() {
+	Node rt;rt.clear();
+	while(!Q.empty()) {
+		Node p;
+		ll t=++rt.children_num;
+		zifu a=Q.front();Q.pop();
+		rt.children.push_back(0);
+		rt.children[t]=dfs(1,t,a);
+	}
 }
 int main() {
   FR();
