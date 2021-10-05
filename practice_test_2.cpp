@@ -262,7 +262,8 @@ ll condition(ll dep,ll wid) {
 	ll t=Node_cnt++;Node n_x;
 	n_x.id=t;n_x.depth=dep;n_x.width=wid;
 	node.push_back(n_x); 
-	node[t].type="condition";
+	node[t].type="con_dition";
+	node[t].content="条件：";
 	while(!Q_s.empty()) {
 		zifu x=Q_s.front();Q_s.pop();
 		node[t].content+=x.name+" ";
@@ -374,8 +375,8 @@ ll dfs(ll dep,ll wid,zifu a) {
 				break;
 			}
 			case 8: {//if
-				node[t].type="if";
-				node[t].content="";
+				node[t].type="i_f";
+				node[t].content="条件：";
 				zifu x=Q.front();Q.pop();
 				while(!Q_s.empty()) Q_s.pop();
 				x=Q.front();Q.pop();
@@ -546,7 +547,7 @@ ll dfs(ll dep,ll wid,zifu a) {
 				while(x.name!=")") {Q_s.push(x);x=Q.front();Q.pop();}
 				stt=node[t].children_num++;zifu sa=Q.front();Q.pop();
 				node[t].children.push_back(0);
-				temp_d=condition(dep+1,wid);
+				temp_d=biaodashi(dep+1,wid);
 				node[t].children[stt]=temp_d;
 				if(sa.name==";") break ;
 				else if(sa.name=="{") {
@@ -606,6 +607,7 @@ ll dfs(ll dep,ll wid,zifu a) {
 				node[t].children.push_back(0);
 				ll temp_d=condition(dep,wid);
 				node[t].children[stt]=temp_d;
+				sa=Q.front();Q.pop();
 				break;
 			}
 			case 14: {//break
@@ -683,7 +685,7 @@ ll dfs(ll dep,ll wid,zifu a) {
 	else if(a.type=="BIAOSHIFU") {
 		node[t].type="BIAODASHI";
 		node[t].content="";
-		zifu x=Q.front();Q.pop();
+		zifu x=a;
 		while(x.name!=";") {
 			node[t].content+=x.name+" ";
 			x=Q.front();Q.pop();
@@ -693,19 +695,6 @@ ll dfs(ll dep,ll wid,zifu a) {
 		puts("ERROR");
 	}
 	return t;
-}
-
-void print(ll x) {
-	cout<<x<<":"<<endl;
-	cout<<"id:"<<node[x].id<<endl;
-	cout<<"type:"<<node[x].type<<endl;
-	cout<<"content:"<<node[x].content<<endl;
-	cout<<"children_num:"<<node[x].children_num<<endl;
-	cout<<"children:"<<endl;
-	for(re ll i=0;i<node[x].children_num;i++) {
-		cout<<node[x].children[i]<<endl;
-	}
-	/*for(re ll i=0;i<node[x].children_num;i++) print(node[x].children[i]);*/
 }
 
 void solve() {
@@ -726,17 +715,52 @@ void solve() {
 	}
 }
 
+void print(ll x) {
+	cout<<x<<":"<<endl;
+	cout<<"id:"<<node[x].id<<endl;
+	cout<<"type:"<<node[x].type<<endl;
+	cout<<"content:"<<node[x].content<<endl;
+	cout<<"children_num:"<<node[x].children_num<<endl;
+	cout<<"children:"<<endl;
+	for(re ll i=0;i<node[x].children_num;i++) {
+		cout<<node[x].children[i]<<endl;
+	}
+}
 void vis(ll x) {
 	print(x);
 	for(re ll i=0;i<node[x].children_num;i++) {
 		vis(node[x].children[i]);
 	}
 }
+FILE *fp=fopen("test.gv","w+");
+
+void fpri(ll x) {
+	/*a [label = "this is node a"];*/
+	cout<<node[x].id<<"[shape = record , label = \""<<"{<head> "<<node[x].type<<" | "<<node[x].content<<"}\"];"<<endl;
+//	fprintf(fp,"%d[label = \"{<head>%s | %s}\"];",node[x].id,node[x].type,node[x].content);
+	for(re ll i=0;i<node[x].children_num;i++) fpri(node[x].children[i]);
+}
+void fpri2(ll x) {
+	for(re ll i=0;i<node[x].children_num;i++) {
+		cout<<x<<" -> "<<node[x].children[i]<<endl;
+		fpri2(node[x].children[i]);
+	}
+}
+void fprint() {
+	freopen("test.gv","w+",stdout);
+	cout<<"digraph graph1 {"<<endl;
+	cout<<"node [fontname=\"FangSong\"];"<<endl;
+	cout<<"graph [fontname=\"FangSong\"];"<<endl;
+	cout<<"edge [fontname=\"FangSong\"];"<<endl;
+	fpri(0);
+	fpri2(0);
+	cout<<"}"<<endl;
+}
 int main() {
   FR();
 	get_Q();/*check_Q();*/
-	solve();
-	vis(0);
+	solve();/*vis(0);*/
+	fprint();
 //  FC();
     return 0;
 }
